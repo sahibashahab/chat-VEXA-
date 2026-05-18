@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Mic, MicOff, Send, Loader2, Bot, Paperclip, Settings, CloudOff } from 'lucide-react';
 import type { Conversation, Message, Document, UserSettings, Memory, LanguageCode } from '../lib/supabase';
 import MessageBubble from './MessageBubble';
-import DocumentPanel from './DocumentPanel';
-import Toolbar from './Toolbar';
 import { useSpeech } from '../hooks/useSpeech';
+import AiAvatar from './AiAvatar';
 
 type Props = {
   conversation: Conversation | null;
@@ -15,6 +14,9 @@ type Props = {
   settings: UserSettings;
   memories: Memory[];
   detectedEmotion: string;
+  isTyping: boolean;
+isSpeaking: boolean;
+isListening: boolean;
   onSend: (text: string) => void;
   onAddDocument: (filename: string, content: string, fileType: string, fileData: string) => void;
   onRemoveDocument: (id: string) => void;
@@ -32,12 +34,21 @@ export default function ChatArea({
   onSend, onAddDocument, onRemoveDocument, onCreateConversation, onOpenSettings,
   onFetchInternet, onOCR, onImageExplain, onTranslate, onGenerateReport,
 }: Props) {
+  const [_memories] = [memories];
   const [input, setInput] = useState('');
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { isListening, isSpeaking, transcript, startListening, stopListening, speak, stopSpeaking, hasSpeechRecognition } = useSpeech();
+  useEffect(() => {
+  const msg = new SpeechSynthesisUtterance("Welcome to Vexa AI assistant");
+  msg.lang = "en-US";
+  msg.rate = 1;
+  msg.volume = 1;
 
+  window.speechSynthesis.speak(msg);
+}, []);
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, sending]);
   useEffect(() => { if (transcript) setInput(transcript); }, [transcript]);
 
@@ -99,24 +110,24 @@ export default function ChatArea({
   if (!conversation) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-6 px-8 relative">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute w-72 h-72 rounded-full bg-[#00a884]/5 top-1/4 left-1/4 animate-[floatOrb1_8s_ease-in-out_infinite]" />
-          <div className="absolute w-56 h-56 rounded-full bg-[#00a884]/8 bottom-1/4 right-1/4 animate-[floatOrb2_10s_ease-in-out_infinite]" />
-        </div>
-
-        <div className="welcome-icon w-24 h-24 rounded-full bg-[#00a884]/20 flex items-center justify-center relative z-10">
-          <Bot size={48} className="text-[#00a884]" />
+        
+        <div className="welcome-icon w-70 h-70 flex items-center justify-center relative z-30">
+          <AiAvatar
+            isListening={isListening}
+            isSpeaking={isSpeaking}
+            isTyping={sending}
+          />
         </div>
         <div className="text-center relative z-10">
-          <h2 className="text-[#e9edef] text-2xl font-semibold mb-2">AI ChatBot</h2>
+          <h2 className="text-[#e9edef] text-2xl font-semibold mb-2">VEXA</h2>
           <p className="text-[#8696a0] text-sm max-w-xs leading-relaxed">
-            Chat with AI, use voice input, upload documents & images, search the internet, translate, and more.
+            Chat with AI
           </p>
         </div>
         <button onClick={onCreateConversation} className="welcome-btn px-6 py-3 bg-[#00a884] text-white rounded-full font-medium text-sm relative z-10">
           Start New Chat
         </button>
-        <div className="grid grid-cols-3 gap-3 w-full max-w-sm mt-2 relative z-10">
+        {/* <div className="grid grid-cols-3 gap-3 w-full max-w-sm mt-2 relative z-10">
           {[
             { label: 'Voice Input', icon: '🎙' },
             { label: 'Image AI', icon: '🖼' },
@@ -130,7 +141,7 @@ export default function ChatArea({
               <p className="text-[#aebac1] text-xs font-medium">{f.label}</p>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -139,8 +150,8 @@ export default function ChatArea({
     <div className="flex flex-col h-full relative">
       {/* Chat header */}
       <div className="flex items-center gap-3 px-4 py-3 header-glass z-10">
-        <div className="w-10 h-10 rounded-full bg-[#00a884] flex items-center justify-center transition-transform duration-300 hover:scale-110">
-          <Bot size={20} className="text-white" />
+     <div className="w-20 h-20 rounded-full bg-[#00a884] flex items-center justify-center overflow-hidden">    
+        <Bot size={20} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[#e9edef] font-medium text-sm truncate">{conversation.title}</p>
@@ -161,30 +172,10 @@ export default function ChatArea({
         </button>
       </div>
 
-      {/* Document panel */}
-      <DocumentPanel
-        documents={documents}
-        onRemove={onRemoveDocument}
-        onUpload={handleFileUpload}
-        onImageUpload={handleImageUpload}
-      />
-
-      {/* Toolbar */}
-      <Toolbar
-        language={settings.language}
-        onFetchInternet={onFetchInternet}
-        onOCR={onOCR}
-        onImageExplain={onImageExplain}
-        onTranslate={onTranslate}
-        onGenerateReport={onGenerateReport}
-        onSendResult={(text) => onSend(text)}
-      />
-
+      
       {/* Messages */}
       <div className="flex-1 overflow-y-auto py-4 relative">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute w-96 h-96 rounded-full bg-[#00a884]/3 -top-48 -right-48 animate-[floatOrb1_15s_ease-in-out_infinite]" />
-          <div className="absolute w-80 h-80 rounded-full bg-[#00a884]/3 -bottom-40 -left-40 animate-[floatOrb2_18s_ease-in-out_infinite]" />
         </div>
 
         <div className="relative z-10">
@@ -233,21 +224,65 @@ export default function ChatArea({
           </div>
         )}
         <div className="input-glow flex items-end gap-2 glass rounded-2xl px-3 py-2 transition-all duration-300">
-          <label className="flex-shrink-0 w-9 h-9 flex items-center justify-center cursor-pointer hover:bg-[#3a4a54] rounded-full transition-all duration-200 hover:scale-110" title="Attach file">
-            <Paperclip size={20} className="text-[#aebac1]" />
-            <input
-              type="file"
-              accept=".pdf,.txt,.doc,.docx,.ppt,.pptx,.md,image/*"
-              className="hidden"
-              onChange={e => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                if (f.type.startsWith('image/')) handleImageUpload(f);
-                else handleFileUpload(f);
-                e.target.value = '';
-              }}
-            />
-          </label>
+          <div className="flex items-center gap-1 relative">
+            <button
+              onClick={() => setShowAttachMenu(!showAttachMenu)}
+              className="flex-shrink-0 w-9 h-9 flex items-center justify-center hover:bg-[#3a4a54] rounded-full transition-all"
+            >
+              <Paperclip size={20} className="text-[#aebac1]" />
+            </button>
+            {showAttachMenu && (
+                <div className="absolute bottom-12 left-0 glass rounded-2xl p-2 w-64 z-50">
+
+                  {/* Image Upload */}
+                  <label className="flex items-center gap-3 p-3 hover:bg-[#3a4a54] rounded-xl cursor-pointer text-[#e9edef]">
+                    🖼 Upload Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file);
+                        setShowAttachMenu(false);
+                      }}
+                    />
+                  </label>
+
+                  {/* Document Upload */}
+                  <label className="flex items-center gap-3 p-3 hover:bg-[#3a4a54] rounded-xl cursor-pointer text-[#e9edef]">
+                    📄 Upload File
+                    <input
+                      type="file"
+                      accept=".pdf,.txt,.doc,.docx,.ppt,.pptx,.md"
+                      hidden
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file);
+                        setShowAttachMenu(false);
+                      }}
+                    />
+                  </label>
+
+                  <div className="border-t border-white/10 my-2"></div>
+
+                  {/* <Toolbar
+                    language={settings.language}
+                    onFetchInternet={onFetchInternet}
+                    onOCR={onOCR}
+                    onImageExplain={onImageExplain}
+                    onTranslate={onTranslate}
+                    onGenerateReport={onGenerateReport}
+                    onSendResult={(text) => {
+                      onSend(text);
+                      setShowAttachMenu(false);
+                    }}
+                  /> */}
+                </div>
+              )}
+           
+          </div>
+
 
           <textarea
             ref={inputRef}

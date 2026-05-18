@@ -80,7 +80,7 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
           <div className="w-10 h-10 rounded-full bg-[#00a884] flex items-center justify-center glow-ring">
             <Bot size={20} className="text-white" />
           </div>
-          <span className="font-semibold text-base text-[#e9edef]">AI ChatBot</span>
+          <span className="font-semibold text-base text-[#e9edef]">VEXA</span>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -173,8 +173,7 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
             <div
               key={conv.id}
               onClick={() => onSelect(conv)}
-              className={`conv-item flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-[#222d34]/50 stagger-item ${
-                activeConversation?.id === conv.id ? 'bg-[#2a3942]/90' : ''
+               className={`group conv-item flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-[#222d34]/50 stagger-item ${                activeConversation?.id === conv.id ? 'bg-[#2a3942]/90' : ''
               }`}
               style={{ animationDelay: `${i * 50}ms` }}
             >
@@ -189,7 +188,10 @@ export default function Sidebar({ conversations, activeConversation, onSelect, o
                 <div className="flex items-center justify-between mt-0.5">
                   <span className="text-[#8696a0] text-xs truncate">Tap to open chat</span>
                   <button
-                    onClick={e => { e.stopPropagation(); onDelete(conv.id); }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      onDelete(conv.id);
+                    }}
                     className="opacity-0 group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-500/20 transition-all duration-200 ml-1 flex-shrink-0 hover:scale-110"
                   >
                     <Trash2 size={13} className="text-[#8696a0] hover:text-red-400" />

@@ -41,17 +41,17 @@ html, body, #root {
   left: -100px;
   animation: floatOrb2 15s ease-in-out infinite;
 }
-
+/* 
 @keyframes floatOrb1 {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   33% { transform: translate3d(-60px, 40px, 50px) scale(1.1); }
   66% { transform: translate3d(30px, -30px, -30px) scale(0.95); }
-}
+} */
 
-@keyframes floatOrb2 {
+/* @keyframes floatOrb2 {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(50px, -50px, 40px) scale(1.15); }
-}
+} */
 
 /* ===== Floating Particles ===== */
 .particle {

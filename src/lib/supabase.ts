@@ -3,7 +3,15 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Debug: helps identify missing VITE env vars on Vercel.
+// Remove after verification.
+console.debug('[SupabaseEnv]', {
+  VITE_SUPABASE_URL_present: !!supabaseUrl,
+  VITE_SUPABASE_ANON_KEY_present: !!supabaseAnonKey,
+});
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 
 export type Conversation = {
   id: string;
