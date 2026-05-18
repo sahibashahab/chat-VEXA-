@@ -1,0 +1,519 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Global 3D Scene ===== */
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  perspective: 1200px;
+}
+
+/* ===== 3D Animated Background ===== */
+.bg-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0b141a 0%, #111b21 40%, #0d1f2d 100%);
+}
+
+.bg-scene::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,168,132,0.15) 0%, transparent 70%);
+  top: -200px;
+  right: -100px;
+  animation: floatOrb1 12s ease-in-out infinite;
+}
+
+.bg-scene::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,168,132,0.1) 0%, transparent 70%);
+  bottom: -150px;
+  left: -100px;
+  animation: floatOrb2 15s ease-in-out infinite;
+}
+
+@keyframes floatOrb1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(-60px, 40px, 50px) scale(1.1); }
+  66% { transform: translate3d(30px, -30px, -30px) scale(0.95); }
+}
+
+@keyframes floatOrb2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(50px, -50px, 40px) scale(1.15); }
+}
+
+/* ===== Floating Particles ===== */
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 168, 132, 0.4);
+  animation: particleFloat linear infinite;
+}
+
+@keyframes particleFloat {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate3d(var(--dx), var(--dy), var(--dz)); opacity: 0; }
+}
+
+/* ===== 3D Card / Panel Transforms ===== */
+.panel-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.panel-3d:hover {
+  transform: translate3d(0, 0, 8px);
+}
+
+/* ===== Sidebar 3D Entrance ===== */
+.sidebar-enter {
+  animation: slideIn3D 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideIn3D {
+  from {
+    transform: translate3d(-100%, 0, -200px) rotateY(25deg);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+/* ===== Conversation Item 3D ===== */
+.conv-item {
+  transform-style: preserve-3d;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.conv-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0,168,132,0.08) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.conv-item:hover {
+  transform: translate3d(4px, 0, 12px) scale(1.01);
+  background: rgba(42, 57, 66, 0.9);
+}
+
+.conv-item:hover::before {
+  opacity: 1;
+}
+
+.conv-item:active {
+  transform: translate3d(2px, 0, 4px) scale(0.99);
+}
+
+/* ===== Message Bubble 3D ===== */
+.msg-bubble {
+  transform-style: preserve-3d;
+  animation: msgAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+}
+
+.msg-bubble::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.msg-bubble:hover::after {
+  opacity: 1;
+  box-shadow: 0 8px 32px rgba(0, 168, 132, 0.15), 0 0 0 1px rgba(0, 168, 132, 0.1);
+}
+
+@keyframes msgAppear {
+  from {
+    transform: translate3d(0, 30px, -60px) scale(0.85);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* User message from right */
+.msg-user {
+  animation-name: msgAppearRight;
+}
+
+@keyframes msgAppearRight {
+  from {
+    transform: translate3d(40px, 20px, -60px) scale(0.85);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* Assistant message from left */
+.msg-assistant {
+  animation-name: msgAppearLeft;
+}
+
+@keyframes msgAppearLeft {
+  from {
+    transform: translate3d(-40px, 20px, -60px) scale(0.85);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+/* ===== Typing Indicator 3D ===== */
+.typing-dot {
+  animation: typingBounce3D 1.4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes typingBounce3D {
+  0%, 60%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    background: rgba(134, 150, 160, 0.6);
+  }
+  30% {
+    transform: translate3d(0, -8px, 20px) scale(1.3);
+    background: rgba(0, 168, 132, 0.9);
+  }
+}
+
+/* ===== Send Button 3D ===== */
+.btn-send {
+  transform-style: preserve-3d;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.btn-send::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0,168,132,0.4), rgba(0,200,154,0.2));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.btn-send:hover {
+  transform: translate3d(0, -2px, 10px) scale(1.08);
+}
+
+.btn-send:hover::before {
+  opacity: 1;
+}
+
+.btn-send:active {
+  transform: translate3d(0, 0, 2px) scale(0.95);
+}
+
+/* ===== Mic Button Pulse ===== */
+.mic-active {
+  animation: micPulse3D 1.5s ease-in-out infinite;
+}
+
+@keyframes micPulse3D {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    transform: scale(1.1) translate3d(0, 0, 8px);
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+  }
+}
+
+/* ===== Document Chip 3D ===== */
+.doc-chip {
+  transform-style: preserve-3d;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: chipIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.doc-chip:hover {
+  transform: translate3d(0, -2px, 8px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 168, 132, 0.2);
+}
+
+@keyframes chipIn {
+  from {
+    transform: translate3d(0, 10px, -30px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== Welcome Screen 3D ===== */
+.welcome-icon {
+  animation: welcomeFloat 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes welcomeFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg); }
+  25% { transform: translate3d(0, -10px, 20px) rotateY(5deg) rotateX(5deg); }
+  50% { transform: translate3d(0, -5px, 10px) rotateY(-3deg) rotateX(-3deg); }
+  75% { transform: translate3d(0, -12px, 25px) rotateY(-5deg) rotateX(3deg); }
+}
+
+.welcome-btn {
+  transform-style: preserve-3d;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transform: translate3d(-50%, -50%, 0);
+  transition: width 0.5s ease, height 0.5s ease;
+}
+
+.welcome-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.welcome-btn:hover {
+  transform: translate3d(0, -3px, 15px) scale(1.03);
+  box-shadow: 0 12px 40px rgba(0, 168, 132, 0.35);
+}
+
+.welcome-btn:active {
+  transform: translate3d(0, 0, 4px) scale(0.98);
+}
+
+/* ===== Feature Cards 3D ===== */
+.feature-card {
+  transform-style: preserve-3d;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0,168,132,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translate3d(0, -6px, 20px) rotateX(2deg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card:hover::after {
+  opacity: 1;
+}
+
+/* ===== Scrollbar Styling ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(134, 150, 160, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(134, 150, 160, 0.5);
+}
+
+/* ===== Glass Effect ===== */
+.glass {
+  background: rgba(32, 44, 51, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== Glow Ring on Active Chat ===== */
+.glow-ring {
+  position: relative;
+}
+
+.glow-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #00a884, transparent, #00a884);
+  animation: glowSpin 3s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+@keyframes glowSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Staggered List Animation ===== */
+.stagger-item {
+  opacity: 0;
+  animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes staggerIn {
+  from {
+    transform: translate3d(-20px, 0, -40px);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+/* ===== Input Focus Glow ===== */
+.input-glow:focus-within {
+  box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.3), 0 4px 20px rgba(0, 168, 132, 0.1);
+  transform: translate3d(0, 0, 4px);
+}
+
+/* ===== Header Glass ===== */
+.header-glass {
+  background: rgba(32, 44, 51, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== Mobile Safe Area ===== */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== Mobile Touch Targets ===== */
+@media (max-width: 767px) {
+  .conv-item {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .msg-bubble {
+    animation-duration: 0.25s;
+  }
+
+  /* Larger touch targets on mobile */
+  button, a, label[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text selection on UI elements */
+  .conv-item, .doc-chip, button {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling on mobile */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Prevent pull-to-refresh */
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Input area mobile adjustments */
+  .input-glow {
+    border-radius: 24px;
+  }
+
+  /* Hide scrollbar on mobile */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ===== PWA Standalone Mode ===== */
+@media (display-mode: standalone) {
+  .bg-scene::before,
+  .bg-scene::after {
+    display: none;
+  }
+
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* ===== iOS Safe Area Support ===== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
+  }
+}
+
+/* ===== Landscape Mobile ===== */
+@media (max-width: 767px) and (orientation: landscape) {
+  .safe-area-bottom {
+    padding-bottom: 4px;
+  }
+}

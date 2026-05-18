@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#00a884" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AI Chat" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
+    <!-- Splash -->
+    <meta name="msapplication-TileColor" content="#111b21" />
+    <meta name="msapplication-TileImage" content="/icon-192.png" />
+
+    <title>AI ChatBot</title>
+
+    <!-- Preload critical fonts -->
+    <style>
+      @keyframes splashFade { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes splashPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+      #splash { position: fixed; inset: 0; z-index: 9999; background: #111b21; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; transition: opacity 0.5s ease; }
+      #splash.hide { opacity: 0; pointer-events: none; }
+      #splash-icon { width: 80px; height: 80px; border-radius: 50%; background: #00a884; display: flex; align-items: center; justify-content: center; animation: splashPulse 1.5s ease-in-out infinite; }
+      #splash-text { color: #e9edef; font-family: system-ui, sans-serif; font-size: 18px; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <!-- Splash screen -->
+    <div id="splash">
+      <div id="splash-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+          <path d="M12 8V16M8 12H16"/>
+          <path d="M17 8C19 8 21 10.5 21 12C21 13.5 19 16 17 16"/>
+        </svg>
+      </div>
+      <div id="splash-text">AI ChatBot</div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
+      // Hide splash
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const s = document.getElementById('splash');
+          if (s) { s.classList.add('hide'); setTimeout(() => s.remove(), 500); }
+        }, 600);
+      });
+    </script>
+  </body>
+</html>
