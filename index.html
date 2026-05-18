@@ -49,10 +49,13 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Register service worker
+      <!-- Register service worker (temporarily disabled to debug blank page on Vercel) -->
+      
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
       }
+      
+
       // Hide splash
       window.addEventListener('load', () => {
         setTimeout(() => {
